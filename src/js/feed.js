@@ -5,6 +5,17 @@ var closeCreatePostModalButton = document.querySelector(
 );
 var sharedMemories = document.querySelector('#shared-memories');
 
+// offline data
+db.enablePersistence().catch(err => {
+  if (err.code == 'faild-precondition') {
+    console.log('presistence failed: probably multiple tabs open');
+  }
+
+  if (err.code == 'unimplemented') {
+    console.log('presistence is not available : lack of browser support');
+  }
+});
+
 // real-time listener
 db.collection('posts').onSnapshot(snapshot => {
   snapshot.docChanges().forEach(change => {

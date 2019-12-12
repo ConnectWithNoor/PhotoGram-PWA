@@ -1,5 +1,5 @@
-const staticCacheVerion = 'staticCache-v10';
-const dynamicCacheVersion = 'dynamicCache-v7';
+const staticCacheVerion = 'staticCache-v11';
+const dynamicCacheVersion = 'dynamicCache-v8';
 const staticCache = [
   '/',
   '/index.html',
@@ -118,46 +118,48 @@ self.addEventListener('activate', event => {
 
 // Strategy network then cache fallback
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    fetch(event.request)
-      .then(res => {
-        if (
-          !staticCache
-            .slice(1)
-            .find(sCache => event.request.url.includes(sCache))
-        ) {
+  if (!event.request.url.includes('firestore.googleapis.com')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          if (
+            !staticCache
+              .slice(1)
+              .find(sCache => event.request.url.includes(sCache))
+          ) {
+            return caches
+              .open(dynamicCacheVersion)
+              .then(cache => {
+                // trimCache(dynamicCacheVersion, 10);
+                cache.put(event.request.url, res.clone());
+                return res;
+              })
+              .catch(err =>
+                console.log('service worker, storing dynamic cache error', err)
+              );
+          } else {
+            return res;
+          }
+        })
+        .catch(err => {
+          console.log('fetch network error, trying cache', err);
           return caches
-            .open(dynamicCacheVersion)
-            .then(cache => {
-              // trimCache(dynamicCacheVersion, 10);
-              cache.put(event.request.url, res.clone());
-              return res;
+            .match(event.request)
+            .then(res => {
+              console.log(event.request.url);
+              return res
+                ? res
+                : event.request.url.includes('.html')
+                ? caches.match('/pages/fallback.html')
+                : event.request.url.includes('.png') ||
+                  event.request.url.includes('.jpg')
+                ? caches.match('/src/images/img-not-found.png')
+                : null;
             })
-            .catch(err =>
-              console.log('service worker, storing dynamic cache error', err)
+            .catch(() =>
+              console.log('strategy network then cache fallback failed')
             );
-        } else {
-          return res;
-        }
-      })
-      .catch(err => {
-        console.log('fetch network error, trying cache', err);
-        return caches
-          .match(event.request)
-          .then(res => {
-            console.log(event.request.url);
-            return res
-              ? res
-              : event.request.url.includes('.html')
-              ? caches.match('/pages/fallback.html')
-              : event.request.url.includes('.png') ||
-                event.request.url.includes('.jpg')
-              ? caches.match('/src/images/img-not-found.png')
-              : null;
-          })
-          .catch(() =>
-            console.log('strategy network then cache fallback failed')
-          );
-      })
-  );
+        })
+    );
+  }
 });
