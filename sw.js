@@ -1,5 +1,5 @@
-const staticCacheVerion = 'staticCache-v11';
-const dynamicCacheVersion = 'dynamicCache-v8';
+const staticCacheVerion = 'staticCache-v12';
+const dynamicCacheVersion = 'dynamicCache-v9';
 const staticCache = [
   '/',
   '/index.html',

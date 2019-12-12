@@ -1,5 +1,6 @@
 var shareImageButton = document.querySelector('#share-image-button');
 var createPostArea = document.querySelector('#create-post');
+var form = document.querySelector('#form');
 var closeCreatePostModalButton = document.querySelector(
   '#close-create-post-modal-btn'
 );
@@ -84,3 +85,21 @@ function createCard(data, id) {
   componentHandler.upgradeElement(cardWrapper);
   sharedMemories.appendChild(cardWrapper);
 }
+
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const post = {
+    title: form.title.value,
+    location: form.location.value,
+    image: form.image.value
+  };
+
+  // add to firestore database
+
+  db.collection('posts')
+    .add(post)
+    .catch(err => console.log('error in adding post to firestore', err));
+
+  form.reset();
+});
