@@ -1,5 +1,5 @@
-const staticCacheVerion = 'staticCache-v8';
-const dynamicCacheVersion = 'dynamicCache-v5';
+const staticCacheVerion = 'staticCache-v9';
+const dynamicCacheVersion = 'dynamicCache-v6';
 const staticCache = [
   '/',
   '/index.html',
@@ -11,6 +11,7 @@ const staticCache = [
   '/src/css/feed.css',
   '/src/images/main-image.jpg',
   '/src/images/logo.png',
+  '/src/images/img-not-found.png',
   'https://fonts.googleapis.com/css?family=Roboto:400,700',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://code.getmdl.io/1.3.0/material.blue_grey-pink.min.css'
@@ -105,25 +106,43 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     fetch(event.request)
-      .then(res =>
-        caches
-          .open(dynamicCacheVersion)
-          .then(cache => {
-            cache.put(event.request.url, res.clone());
-            return res;
-          })
-          .catch(err =>
-            console.log('service worker, storing dynamic cache error', err)
-          )
-      )
+      .then(res => {
+        if (
+          !staticCache
+            .slice(1)
+            .find(sCache => event.request.url.includes(sCache))
+        ) {
+          return caches
+            .open(dynamicCacheVersion)
+            .then(cache => {
+              cache.put(event.request.url, res.clone());
+              return res;
+            })
+            .catch(err =>
+              console.log('service worker, storing dynamic cache error', err)
+            );
+        } else {
+          return res;
+        }
+      })
       .catch(err => {
         console.log('fetch network error', err);
         return caches
           .match(event.request)
           .then(res => {
-            return res ? res : caches.match('/fallback.html');
+            console.log(event.request.url);
+            return res
+              ? res
+              : event.request.url.includes('.html')
+              ? caches.match('/fallback.html')
+              : event.request.url.includes('.png') ||
+                event.request.url.includes('.jpg')
+              ? caches.match('/src/images/img-not-found.png')
+              : null;
           })
-          .catch(() => console.log('strategy network then cache fallback'));
+          .catch(() =>
+            console.log('strategy network then cache fallback failed')
+          );
       })
   );
 });
