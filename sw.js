@@ -54,48 +54,76 @@ self.addEventListener('activate', event => {
   return self.clients.claim();
 });
 
+// // Strategy cache then network fallback
+// self.addEventListener('fetch', function(event) {
+//   event.respondWith(
+//     caches
+//       .match(event.request)
+//       .then(response => {
+//         // even thought the response is not found on cache it still executes
+//         // the then block instead of catch block by response as a undefined bcz, technically
+//         // undefined is not ana error.
+//         return response // if response is in cache return it, else fetch from network
+//           ? response
+//           : fetch(event.request)
+//               .then((
+//                 res // after fetch response, open dynamic cache
+//               ) =>
+//                 caches
+//                   .open(dynamicCacheVersion)
+//                   .then(cache => {
+//                     // then put them into dynamic cache
+//                     cache.put(event.request.url, res.clone()); // gottcha: res can be consumed once. so cloning it
+//                     return res; // imp to send the res back to html page
+//                   })
+//                   .catch(err =>
+//                     console.log(
+//                       'service worker, storing dynamic cache error',
+//                       err
+//                     )
+//                   )
+//               )
+//               .catch(err => {
+//                 console.log(
+//                   'service worker, fetching dynamic catch error',
+//                   err
+//                 );
+//                 // serving fallback.html to avoid breaking application
+//                 return caches
+//                   .open(staticCacheVerion)
+//                   .then(cache => cache.match('/fallback.html'))
+//                   .catch(err => console.log('serving fallback error', err));
+//               });
+//       })
+//       .catch(err => {
+//         console.log('cache match error', err);
+//       })
+//   );
+// });
+
+// Strategy network then cache fallback
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches
-      .match(event.request)
-      .then(response => {
-        // even thought the response is not found on cache it still executes
-        // the then block instead of catch block by response as a undefined bcz, technically
-        // undefined is not ana error.
-        return response // if response is in cache return it, else fetch from network
-          ? response
-          : fetch(event.request)
-              .then((
-                res // after fetch response, open dynamic cache
-              ) =>
-                caches
-                  .open(dynamicCacheVersion)
-                  .then(cache => {
-                    // then put them into dynamic cache
-                    cache.put(event.request.url, res.clone()); // gottcha: res can be consumed once. so cloning it
-                    return res; // imp to send the res back to html page
-                  })
-                  .catch(err =>
-                    console.log(
-                      'service worker, storing dynamic cache error',
-                      err
-                    )
-                  )
-              )
-              .catch(err => {
-                console.log(
-                  'service worker, fetching dynamic catch error',
-                  err
-                );
-                // serving fallback.html to avoid breaking application
-                return caches
-                  .open(staticCacheVerion)
-                  .then(cache => cache.match('/fallback.html'))
-                  .catch(err => console.log('serving fallback error', err));
-              });
-      })
+    fetch(event.request)
+      .then(res =>
+        caches
+          .open(dynamicCacheVersion)
+          .then(cache => {
+            cache.put(event.request.url, res.clone());
+            return res;
+          })
+          .catch(err =>
+            console.log('service worker, storing dynamic cache error', err)
+          )
+      )
       .catch(err => {
-        console.log('cache match error', err);
+        console.log('fetch network error', err);
+        return caches
+          .match(event.request)
+          .then(res => {
+            return res ? res : caches.match('/fallback.html');
+          })
+          .catch(() => console.log('strategy network then cache fallback'));
       })
   );
 });
