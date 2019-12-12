@@ -1,5 +1,5 @@
-const staticCacheVerion = 'staticCache-v9';
-const dynamicCacheVersion = 'dynamicCache-v6';
+const staticCacheVerion = 'staticCache-v10';
+const dynamicCacheVersion = 'dynamicCache-v7';
 const staticCache = [
   '/',
   '/index.html',
@@ -16,6 +16,19 @@ const staticCache = [
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://code.getmdl.io/1.3.0/material.blue_grey-pink.min.css'
 ];
+
+function trimCache(cacheName, maxItems) {
+  caches
+    .open(cacheName)
+    .then(cache =>
+      cache.keys().then(keys => {
+        if (keys.length > maxItems) {
+          cache.delete(keys[0]).then(trimCache(cacheName, maxItems));
+        }
+      })
+    )
+    .catch(err => console.log('error in trimCache', err));
+}
 
 self.addEventListener('install', event => {
   console.log('service worker installed', event);
@@ -55,7 +68,8 @@ self.addEventListener('activate', event => {
   return self.clients.claim();
 });
 
-// // Strategy cache then network fallback
+// Strategy cache then network fallback
+
 // self.addEventListener('fetch', function(event) {
 //   event.respondWith(
 //     caches
@@ -115,6 +129,7 @@ self.addEventListener('fetch', function(event) {
           return caches
             .open(dynamicCacheVersion)
             .then(cache => {
+              trimCache(dynamicCacheVersion, 10);
               cache.put(event.request.url, res.clone());
               return res;
             })
