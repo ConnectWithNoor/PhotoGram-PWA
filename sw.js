@@ -46,7 +46,29 @@ self.addEventListener('fetch', function(event) {
         // even thought the response is not found on cache it still executes
         // the then block instead of catch block by response as a undefined bcz, technically
         // undefined is not ana error.
-        return response ? response : fetch(event.request);
+        return response // if response is in cache return it, else fetch from network
+          ? response
+          : fetch(event.request)
+              .then((
+                res // after fetch response, open dynamic cache
+              ) =>
+                caches
+                  .open('dynamic')
+                  .then(cache => {
+                    // then put them into dynamic cache
+                    cache.put(event.request.url, res.clone()); // gottcha: res can be consumed once. so cloning it
+                    return res; // imp to send the res back to html page
+                  })
+                  .catch(err =>
+                    console.log(
+                      'service worker, storing dynamic cache error',
+                      err
+                    )
+                  )
+              )
+              .catch(err =>
+                console.log('service worker, fetching dynamic catch error', err)
+              );
       })
       .catch(err => console.log('fetching cache error', err))
   );
