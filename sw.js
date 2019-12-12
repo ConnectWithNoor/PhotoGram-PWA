@@ -3,7 +3,7 @@ const dynamicCacheVersion = 'dynamicCache-v6';
 const staticCache = [
   '/',
   '/index.html',
-  '/fallback.html',
+  '/pages/fallback.html',
   '/src/js/app.js',
   '/src/js/feed.js',
   '/src/js/material.min.js',
@@ -126,7 +126,7 @@ self.addEventListener('fetch', function(event) {
         }
       })
       .catch(err => {
-        console.log('fetch network error', err);
+        console.log('fetch network error, trying cache', err);
         return caches
           .match(event.request)
           .then(res => {
@@ -134,7 +134,7 @@ self.addEventListener('fetch', function(event) {
             return res
               ? res
               : event.request.url.includes('.html')
-              ? caches.match('/fallback.html')
+              ? caches.match('/pages/fallback.html')
               : event.request.url.includes('.png') ||
                 event.request.url.includes('.jpg')
               ? caches.match('/src/images/img-not-found.png')

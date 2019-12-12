@@ -7,7 +7,7 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Help - PhotoGram</title>
+    <title>PhotoGram - Fallback Page</title>
     <link
       href="https://fonts.googleapis.com/css?family=Roboto:400,700"
       rel="stylesheet"
@@ -18,15 +18,10 @@
     />
     <link
       rel="stylesheet"
-      href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css"
-    />
-    <link
-      rel="stylesheet"
       href="https://code.getmdl.io/1.3.0/material.blue_grey-pink.min.css"
     />
     <link rel="stylesheet" href="/src/css/app.css" />
-    <link rel="stylesheet" href="/src/css/feed.css" />
-    <link rel="manifest" href="../manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
   </head>
   <body>
     <div id="app">
@@ -34,18 +29,20 @@
         <header class="mdl-layout__header">
           <div class="mdl-layout__header-row">
             <!-- Title -->
-            <span class="mdl-layout-title">PhotoGram</span>
+            <span class="mdl-layout-title"
+              ><img src="../src/images/logo.png" alt="photogram" width="45%"
+            /></span>
             <!-- Add spacer, to align navigation to the right -->
             <div class="mdl-layout-spacer"></div>
             <!-- Navigation. We hide it in small screens. -->
-            <nav class="mdl-navigation mdl-layout--large-scree-only">
+            <nav class="mdl-navigation mdl-layout--large-screen-only">
               <a class="mdl-navigation__link" href="/">Feed</a>
-              <a class="mdl-navigation__link" href="/settings">Settings</a>
+              <a class="mdl-navigation__link" href="/pages/help.html">Help</a>
               <div class="drawer-option">
                 <button
-                  class="enable-notifications mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--accent"
+                  class="enable-notifications mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--pink-400"
                 >
-                  Enable Notifications
+                  Enable push Notifications
                 </button>
               </div>
             </nav>
@@ -55,7 +52,7 @@
           <span class="mdl-layout-title">PhotoGram</span>
           <nav class="mdl-navigation">
             <a class="mdl-navigation__link" href="/">Feed</a>
-            <a class="mdl-navigation__link" href="/help">Help</a>
+            <a class="mdl-navigation__link" href="/pages/help.html">Help</a>
             <div class="drawer-option">
               <button
                 class="enable-notifications mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--pink-400"
@@ -66,41 +63,16 @@
           </nav>
         </div>
         <main class="mdl-layout__content mat-typography">
-          <div class="mdl-grid">
-            <div class="mdl-cell mdl-cell--12-col text-center">
-              <h3>Need Help?</h3>
-              <p>
-                Learn how to use this app and share your amazing memories with
-                all your friends!
-              </p>
-            </div>
-          </div>
-          <div class="mdl-grid">
-            <div class="mdl-cell mdl-cell--12-col text-center">
-              <h3>Contact Us!</h3>
-              <div>
-                <button
-                  class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-color--pink-400"
-                >
-                  <i class="material-icons">call</i>
-                </button>
-                <button
-                  class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-color--pink-400"
-                >
-                  <i class="material-icons">email</i>
-                </button>
-                <button
-                  class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-color--pink-400"
-                >
-                  <i class="material-icons">chat_bubble</i>
-                </button>
-              </div>
-            </div>
+          <div class="page-content">
+            <h5 class="text-center mdl-color-text--primary">
+              <span style="color: rgba(207, 32, 32, 0.829);">OOPS! </span> 
+              Currently you cannot view that page offline
+              <p style="margin-top: 3rem;"><a href="/" class="mdl-navigation__link">Go to Homepage</a></p>
+            </h5>
           </div>
         </main>
       </div>
     </div>
-
     <script defer src="/src/js/material.min.js"></script>
     <script src="/src/js/app.js"></script>
   </body>
