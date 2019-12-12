@@ -1,5 +1,5 @@
-const staticCacheVerion = 'staticCache-v2';
-const dynamicCacheVersion = 'dynamicCache-v2';
+const staticCacheVerion = 'staticCache-v4';
+const dynamicCacheVersion = 'dynamicCache-v3';
 const staticCache = [
   '/',
   '/index.html',
@@ -37,6 +37,19 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   console.log('service worker activated', event);
+  event.waitUntil(
+    // caches.keys returns array of all caches
+    caches.keys().then(keyList =>
+      Promise.all(
+        keyList.map(key => {
+          if (key !== staticCacheVerion && key !== dynamicCacheVersion) {
+            console.log('service worker deleting old cache', key);
+            return caches.delete(key);
+          }
+        })
+      )
+    )
+  );
   return self.clients.claim();
 });
 
