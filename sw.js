@@ -1,8 +1,9 @@
-const staticCacheVerion = 'staticCache-v4';
-const dynamicCacheVersion = 'dynamicCache-v4';
+const staticCacheVerion = 'staticCache-v8';
+const dynamicCacheVersion = 'dynamicCache-v5';
 const staticCache = [
   '/',
   '/index.html',
+  '/fallback.html',
   '/src/js/app.js',
   '/src/js/feed.js',
   '/src/js/material.min.js',
@@ -81,10 +82,20 @@ self.addEventListener('fetch', function(event) {
                     )
                   )
               )
-              .catch(err =>
-                console.log('service worker, fetching dynamic catch error', err)
-              );
+              .catch(err => {
+                console.log(
+                  'service worker, fetching dynamic catch error',
+                  err
+                );
+                // serving fallback.html to avoid breaking application
+                return caches
+                  .open(staticCacheVerion)
+                  .then(cache => cache.match('/fallback.html'))
+                  .catch(err => console.log('serving fallback error', err));
+              });
       })
-      .catch(err => console.log('fetching cache error', err))
+      .catch(err => {
+        console.log('cache match error', err);
+      })
   );
 });
