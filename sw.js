@@ -1,4 +1,6 @@
-const staticCache_v1 = [
+const staticCacheVerion = 'staticCache-v2';
+const dynamicCacheVersion = 'dynamicCache-v2';
+const staticCache = [
   '/',
   '/index.html',
   '/src/js/app.js',
@@ -19,11 +21,11 @@ self.addEventListener('install', event => {
   // waitUntill takes a promise
   event.waitUntil(
     caches
-      .open('static-v1')
+      .open(staticCacheVerion)
       .then(cache => {
         console.log('service worker, precaching app shell');
         cache
-          .addAll(staticCache_v1)
+          .addAll(staticCache)
           .then(_ => console.log('service worker, precached app shell'))
           .catch(err => console.log('service worker, precaching failed', err));
       })
@@ -53,7 +55,7 @@ self.addEventListener('fetch', function(event) {
                 res // after fetch response, open dynamic cache
               ) =>
                 caches
-                  .open('dynamic')
+                  .open(dynamicCacheVersion)
                   .then(cache => {
                     // then put them into dynamic cache
                     cache.put(event.request.url, res.clone()); // gottcha: res can be consumed once. so cloning it
