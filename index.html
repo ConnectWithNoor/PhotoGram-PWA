@@ -6,6 +6,7 @@
       name="viewport"
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
+    <meta name="theme-color" content="#607d8b"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>PhotoGram - A PWA alike Instagram</title>
     <link
@@ -140,6 +141,26 @@
         </main>
       </div>
     </div>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-firestore.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyD9WKPUdtNBJ-4pfZE66HxeoizlptPWvMI",
+    authDomain: "photogram-8eee8.firebaseapp.com",
+    databaseURL: "https://photogram-8eee8.firebaseio.com",
+    projectId: "photogram-8eee8",
+    storageBucket: "photogram-8eee8.appspot.com",
+    messagingSenderId: "463185835679",
+    appId: "1:463185835679:web:5815963b22275e1d6514aa"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
     <script defer src="/src/js/material.min.js"></script>
     <script src="/src/js/promise.js"></script>
     <script src="/src/js/fetch.js"></script>

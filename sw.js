@@ -129,7 +129,7 @@ self.addEventListener('fetch', function(event) {
           return caches
             .open(dynamicCacheVersion)
             .then(cache => {
-              trimCache(dynamicCacheVersion, 10);
+              // trimCache(dynamicCacheVersion, 10);
               cache.put(event.request.url, res.clone());
               return res;
             })

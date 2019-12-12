@@ -5,6 +5,20 @@ var closeCreatePostModalButton = document.querySelector(
 );
 var sharedMemories = document.querySelector('#shared-memories');
 
+// real-time listener
+db.collection('posts').onSnapshot(snapshot => {
+  snapshot.docChanges().forEach(change => {
+    if (change.type === 'added') {
+      // add the document to web page
+      createCard(change.doc.data(), change.doc.id);
+    }
+
+    if (change.type === 'removed') {
+      // remove the document from web page
+    }
+  });
+});
+
 async function openCreatePostModal() {
   createPostArea.style.display = 'block';
 
@@ -32,13 +46,14 @@ shareImageButton.addEventListener('click', openCreatePostModal);
 
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
-function createCard() {
+function createCard(data, id) {
   const cardWrapper = document.createElement('div');
+  cardWrapper.id = id;
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
 
   const cardTitle = document.createElement('div');
   cardTitle.className = 'mdl-card__title';
-  cardTitle.style.backgroundImage = 'url("/src/images/sf-boat.jpg")';
+  cardTitle.style.backgroundImage = `url(${data.image})`;
   cardTitle.style.backgroundSize = 'cover';
   cardTitle.style.height = '180px';
   cardWrapper.appendChild(cardTitle);
@@ -46,20 +61,15 @@ function createCard() {
   const cardTitleTextElement = document.createElement('h2');
   cardTitleTextElement.className = 'mdl-card__title-text';
   cardTitleTextElement.style.color = 'black';
-  cardTitleTextElement.textContent = 'San Francisco Trips';
+  cardTitleTextElement.textContent = data.title;
   cardTitle.appendChild(cardTitleTextElement);
 
   const cardSupportText = document.createElement('div');
   cardSupportText.className = 'mdl-card__supporting-text';
-  cardSupportText.textContent = 'In San Francisco';
+  cardSupportText.textContent = data.location;
   cardSupportText.style.textAlign = 'center';
   cardWrapper.appendChild(cardSupportText);
 
   componentHandler.upgradeElement(cardWrapper);
   sharedMemories.appendChild(cardWrapper);
 }
-
-fetch('http://httpbin.org/get')
-  .then(res => res.json())
-  .then(() => createCard())
-  .catch(err => console.log(err));
